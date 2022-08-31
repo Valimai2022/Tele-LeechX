@@ -131,7 +131,7 @@ async def status_message_f(client, message):
             if file.status == "active":
                 umess = user_settings[file.gid]
                 percentage = int(file.progress_string(0).split('%')[0])
-                digits = [int(x) for x in str(("{}").format("%.2d" % percentage))]
+                digits = [int(x) for x in f'{"%.2d" % percentage}']
                 prog = "[{0}{1}{2}]".format(
                     "".join([FINISHED_PROGRESS_STR for _ in range(floor(percentage / 5))]),
                     HALF_FINISHED if floor(digits[1]) > 5 else UN_FINISHED_PROGRESS_STR,
@@ -244,10 +244,12 @@ async def exec_message_f(client, message):
         if message.chat.id not in AUTH_CHANNEL:
             return
     elif message.chat.type == enums.ChatType.SUPERGROUP:
-        if hasattr(message.from_user, 'id'):
-            if message.from_user.id not in AUTH_CHANNEL:
-                return
-        elif message.chat.id not in AUTH_CHANNEL:
+        if (
+            hasattr(message.from_user, 'id')
+            and message.from_user.id not in AUTH_CHANNEL
+            or not hasattr(message.from_user, 'id')
+            and message.chat.id not in AUTH_CHANNEL
+        ):
             return
     DELAY_BETWEEN_EDITS = 0.3
     PROCESS_RUN_TIME = 100
@@ -305,10 +307,12 @@ async def eval_message_f(client, message):
         if message.chat.id not in AUTH_CHANNEL:
             return
     elif message.chat.type == enums.ChatType.SUPERGROUP:
-        if hasattr(message.from_user, 'id'):
-            if message.from_user.id not in AUTH_CHANNEL:
-                return
-        elif message.chat.id not in AUTH_CHANNEL:
+        if (
+            hasattr(message.from_user, 'id')
+            and message.from_user.id not in AUTH_CHANNEL
+            or not hasattr(message.from_user, 'id')
+            and message.chat.id not in AUTH_CHANNEL
+        ):
             return
     status_message = await message.reply_text("Processing ...")
     cmd = message.text.split(" ", maxsplit=1)[1]
