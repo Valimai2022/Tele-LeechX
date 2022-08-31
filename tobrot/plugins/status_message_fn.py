@@ -53,8 +53,7 @@ def getUserOrChaDetails(mess):
         u_tag = mess.from_user.mention
     else:
         uid = str(mess.chat.id)[4:]
-        try: u_tag = mess.author_signature
-        except AttributeError: u_tag = mess.chat.title
+        u_tag = (mess.chat.title if mess.author_signature == 'None' else mess.author_signature)
     return uid, u_tag
 
 async def upload_as_doc(client, message):
@@ -76,7 +75,7 @@ async def upload_as_video(client, message):
         DatabaseManager().user_vid(uid)
         LOGGER.info("[DB] User Toggle VID Settings Saved to Database")
     await message.reply_text(((BotTheme(uid)).TOGGLEVID_MSG).format(
-        u_men = message.from_user.mention,
+        u_men = u_tag,
         u_id = uid,
         UPDATES_CHANNEL = UPDATES_CHANNEL
     ))
@@ -172,7 +171,7 @@ async def status_message_f(client, message):
                         num_seeders = file.num_seeders,
                         connections = file.connections
                     )
-                msg += ((BotTheme(message.from_user.id)).STATUS_MSG_6).format(
+                msg += ((BotTheme(u_id_)).STATUS_MSG_6).format(
                     gid = file.gid
                 )
 
@@ -185,7 +184,7 @@ async def status_message_f(client, message):
             uid = u_id_
         )
         button_markup = InlineKeyboardMarkup([
-            [InlineKeyboardButton('Sᴛᴀᴛs\nCʜᴇᴄᴋ', callback_data="stats"),
+            [InlineKeyboardButton('Sᴛᴀᴛᴜs\nCʜᴇᴄᴋ', callback_data="stats"),
              InlineKeyboardButton('Cʟᴏsᴇ', callback_data="admin_close")]
         ])
 
@@ -407,4 +406,3 @@ async def upload_log_file(client, message):
             LOGGER.info(textLog)
         h, m, s = up_time(time() - BOT_START_TIME)
         await message.reply_document(LOG_FILE_NAME, caption=f"**Full Log**\n\n**Bot Uptime:** `{h}h, {m}m, {s}s`")
-
