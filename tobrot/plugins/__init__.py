@@ -114,3 +114,12 @@ def getDetails(client, message, func_txt: str):
         link = "N/A"
         text__ += f"🔗 <b>Link</b> : <code>{link}</code>"
     return text__, txtCancel
+
+def getUserOrChaDetails(mess):
+    if hasattr(mess.from_user, 'id'):
+        uid = mess.from_user.id
+        u_tag = mess.from_user.mention
+    else:
+        uid = str(mess.chat.id)[4:]
+        u_tag = (mess.chat.title if mess.author_signature == 'None' else mess.author_signature)
+    return uid, u_tag
