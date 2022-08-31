@@ -47,7 +47,7 @@ from tobrot.helper_funcs.upload_to_tg import upload_to_tg
 from tobrot.database.db_func import DatabaseManager
 from tobrot.bot_theme.themes import BotTheme
 
-def getUserOrChaDetails(mess)
+def getUserOrChaDetails(mess):
     if hasattr(message.from_user, 'id'):
         uid = message.from_user.id
         u_tag = message.from_user.mention
