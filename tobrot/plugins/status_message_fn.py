@@ -21,7 +21,8 @@ from psutil import virtual_memory, cpu_percent, net_io_counters
 
 from pyrogram.errors import FloodWait, MessageIdInvalid, MessageNotModified
 from pyrogram import enums
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton 
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from tobrot.plugins import getUserOrChaDetails
 from tobrot.helper_funcs.admin_check import AdminCheck
 from tobrot import (
     AUTH_CHANNEL,
@@ -46,15 +47,6 @@ from tobrot.helper_funcs.download_aria_p_n import aria_start
 from tobrot.helper_funcs.upload_to_tg import upload_to_tg
 from tobrot.database.db_func import DatabaseManager
 from tobrot.bot_theme.themes import BotTheme
-
-def getUserOrChaDetails(mess):
-    if hasattr(mess.from_user, 'id'):
-        uid = mess.from_user.id
-        u_tag = mess.from_user.mention
-    else:
-        uid = str(mess.chat.id)[4:]
-        u_tag = (mess.chat.title if mess.author_signature == 'None' else mess.author_signature)
-    return uid, u_tag
 
 async def upload_as_doc(client, message):
     uid, u_tag = getUserOrChaDetails(message)
