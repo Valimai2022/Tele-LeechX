@@ -19,9 +19,9 @@ async def rclone_command_f(client, message):
     # This is code to switch which rclone config section to use. This setting affects the entire bot
     #(And at this time, the cloneHelper only support gdrive, so you should only choose to use gdrive config section)
     """/rclone command"""
-
-    LOGGER.info(f"[RCLONE] Init Chat ID : {message.chat.id}, User ID : {message.from_user.id}")
-    if message.from_user.id == OWNER_ID and message.chat.type == enums.ChatType.PRIVATE:
+    usr_id, _ = getUserOrChaDetails(message)
+    LOGGER.info(f"[RCLONE] Init Chat ID : {message.chat.id}, User ID : {usr_id}")
+    if usr_id == OWNER_ID and message.chat.type == enums.ChatType.PRIVATE:
         config = ConfigParser()
         config.read("rclone_bak.conf")
         sections = list(config.sections())
@@ -48,7 +48,7 @@ please choose which section you want to use:"""
             await message.delete()
         except:
             pass
-        LOGGER.warning(f"User ID = {message.from_user.id} have no permission to edit rclone config!")
+        LOGGER.warning(f"User ID = {usr_id} have no permission to edit rclone config!")
 
 
 async def rclone_button_callback(bot, update: CallbackQuery):
