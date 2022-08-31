@@ -47,26 +47,30 @@ from tobrot.helper_funcs.upload_to_tg import upload_to_tg
 from tobrot.database.db_func import DatabaseManager
 from tobrot.bot_theme.themes import BotTheme
 
-async def upload_as_doc(client, message):
+def getUserOrChaDetails(mess)
     if hasattr(message.from_user, 'id'):
         uid = message.from_user.id
+        u_tag = message.from_user.mention
     else:
         uid = message.chat.id
+        try: u_tag = message.author_signature
+        except AttributeError: u_tag = message.chat.title
+    return uid, u_tag
+
+async def upload_as_doc(client, message):
+    uid, u_tag = getUserOrChaDetails(message)
     user_specific_config[uid] = True
     if DB_URI:
         DatabaseManager().user_doc(uid)
         LOGGER.info("[DB] User Toggle DOC Settings Saved to Database")
     await message.reply_text(((BotTheme(uid)).TOGGLEDOC_MSG).format(
-        u_men = message.from_user.mention,
+        u_men = u_tag,
         u_id = uid,
         UPDATES_CHANNEL = UPDATES_CHANNEL
     ))
 
 async def upload_as_video(client, message):
-    if hasattr(message.from_user, 'id'):
-        uid = message.from_user.id
-    else:
-        uid = message.chat.id
+    uid, u_tag = getUserOrChaDetails(message)
     user_specific_config[uid] = False
     if DB_URI:
         DatabaseManager().user_vid(uid)
@@ -105,10 +109,7 @@ def bot_button_stats():
 ┗━━━━━━━━━━━━━━━━╹'''
 
 async def status_message_f(client, message):
-    if hasattr(message.from_user, 'id'):
-        u_id_ = message.from_user.id
-    else:
-        u_id_ = message.chat.id
+    u_id_, u_tag = getUserOrChaDetails(message)
     aria_i_p = await aria_start()
     to_edit = await message.reply("🧭 𝐆𝐞𝐭𝐭𝐢𝐧𝐠 𝐂𝐮𝐫𝐫𝐞𝐧𝐭 𝐒𝐭𝐚𝐭𝐮𝐬 . .")
     chat_id = int(message.chat.id)
@@ -178,7 +179,7 @@ async def status_message_f(client, message):
         ms_g = (BotTheme(u_id_)).BOTTOM_STATUS_MSG
         if UPDATES_CHANNEL:
             ms_g += f"\n♦️ℙ𝕠𝕨𝕖𝕣𝕖𝕕 𝔹𝕪 {UPDATES_CHANNEL}♦️"
-        umen = f'<a href="tg://user?id={message.from_user.id}">{message.from_user.first_name}</a>'
+        umen = f'<a href="tg://user?id={u_id_}">{u_tag}</a>'
         mssg = ((BotTheme(u_id_)).TOP_STATUS_MSG).format(
             umen = umen,
             uid = u_id_
