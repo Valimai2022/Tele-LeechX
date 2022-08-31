@@ -37,6 +37,7 @@ from tobrot.helper_funcs.download import download_tg
 from tobrot.bot_theme.themes import BotTheme
 from tobrot.helper_funcs.direct_link_generator import url_link_generate
 from tobrot.helper_funcs.exceptions import DirectDownloadLinkException
+from tobrot.plugins import getUserOrChaDetails
 from tobrot.plugins.custom_utils import *
 from tobrot.plugins import is_appdrive_link, is_gdtot_link, is_hubdrive_link 
 from tobrot.helper_funcs.display_progress import TimeFormatter
@@ -300,7 +301,7 @@ async def call_apropriate_function(
             LOGGER.info(
                 f"Can't extract {opath.basename(to_upload_file)}, Uploading the same file"
             )
-    u_id = user_message.from_user.id
+    u_id, u_men = getUserOrChaDetails(user_message)
     if to_upload_file:
         to_upload_file = __changeFileName(to_upload_file, u_id)
     if cstom_file_name:
@@ -308,18 +309,15 @@ async def call_apropriate_function(
         to_upload_file = cstom_file_name
 
     response = {}
-
-    u_men = user_message.from_user.mention 
-    user_id = user_message.from_user.id
     if com_g:
         if is_cloud:
             await upload_to_gdrive(
-                to_upload_file, sent_message_to_update_tg_p, user_message, user_id
+                to_upload_file, sent_message_to_update_tg_p, user_message, u_id
             )
         else:
             start_upload = time()
             final_response = await upload_to_tg(
-                sent_message_to_update_tg_p, to_upload_file, user_id, response, client
+                sent_message_to_update_tg_p, to_upload_file, u_id, response, client
             )
             end_upload = time()
             if not final_response:
@@ -388,8 +386,9 @@ async def check_progress_for_dl(aria2, gid, event, previous_message, user_messag
                 LOGGER.info(
                     f"Downloaded Successfully : `{file.name} ({file.total_length_string()})` "
                 )
+                u_id, _ = getUserOrChaDetails(user_message)
                 if not file.is_metadata:
-                    await event.edit(((BotTheme(user_message.from_user.id)).DOWN_COM_MSG).format(
+                    await event.edit(((BotTheme(u_id)).DOWN_COM_MSG).format(
                         filename = file.name,
                         size = file.total_length_string()
                     ))
