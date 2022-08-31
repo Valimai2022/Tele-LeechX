@@ -48,7 +48,10 @@ from tobrot.database.db_func import DatabaseManager
 from tobrot.bot_theme.themes import BotTheme
 
 async def upload_as_doc(client, message):
-    uid = message.from_user.id
+    if hasattr(message.from_user, 'id'):
+        uid = message.from_user.id
+    else:
+        uid = message.chat.id
     user_specific_config[uid] = True
     if DB_URI:
         DatabaseManager().user_doc(uid)
@@ -60,7 +63,10 @@ async def upload_as_doc(client, message):
     ))
 
 async def upload_as_video(client, message):
-    uid = message.from_user.id
+    if hasattr(message.from_user, 'id'):
+        uid = message.from_user.id
+    else:
+        uid = message.chat.id
     user_specific_config[uid] = False
     if DB_URI:
         DatabaseManager().user_vid(uid)
@@ -72,14 +78,9 @@ async def upload_as_video(client, message):
     ))
 
 def progress_bar(percentage):
-    p_used = '●'
-    p_total = '○'
-    if isinstance(percentage, str):
-        return ''
-    try:
-        percentage=int(percentage)
-    except:
-        percentage = 0
+    p_used, p_total = '●', '○'
+    try: percentage=int(percentage)
+    except: percentage = 0
     return ''.join(p_used if i <= percentage // 10 else p_total for i in range(10))
 
 def bot_button_stats():
@@ -104,7 +105,10 @@ def bot_button_stats():
 ┗━━━━━━━━━━━━━━━━╹'''
 
 async def status_message_f(client, message):
-    u_id_ = message.from_user.id
+    if hasattr(message.from_user, 'id'):
+        u_id_ = message.from_user.id
+    else:
+        u_id_ = message.chat.id
     aria_i_p = await aria_start()
     to_edit = await message.reply("🧭 𝐆𝐞𝐭𝐭𝐢𝐧𝐠 𝐂𝐮𝐫𝐫𝐞𝐧𝐭 𝐒𝐭𝐚𝐭𝐮𝐬 . .")
     chat_id = int(message.chat.id)
@@ -244,12 +248,9 @@ async def exec_message_f(client, message):
         if message.chat.id not in AUTH_CHANNEL:
             return
     elif message.chat.type == enums.ChatType.SUPERGROUP:
-        if (
-            hasattr(message.from_user, 'id')
-            and message.from_user.id not in AUTH_CHANNEL
-            or not hasattr(message.from_user, 'id')
-            and message.chat.id not in AUTH_CHANNEL
-        ):
+        if hasattr(message.from_user, 'id') and message.from_user.id not in AUTH_CHANNEL:
+            return
+        elif message.chat.id not in AUTH_CHANNEL:
             return
     DELAY_BETWEEN_EDITS = 0.3
     PROCESS_RUN_TIME = 100
@@ -294,10 +295,14 @@ async def exec_message_f(client, message):
 
 async def upload_document_f(client, message):
     imsegd = await message.reply_text("⚙️ Processing ...")
-    if message.from_user.id in AUTH_CHANNEL and " " in message.text:
+    if hasattr(message.from_user, 'id'):
+        u_id_ = message.from_user.id
+    else:
+        u_id_ = message.chat.id
+    if u_id_ in AUTH_CHANNEL and " " in message.text:
         recvd_command, local_file_name = message.text.split(" ", 1)
         recvd_response = await upload_to_tg(
-            imsegd, local_file_name, message.from_user.id, {}, client
+            imsegd, local_file_name, u_id_, {}, client
         )
         LOGGER.info(recvd_response)
     await imsegd.delete()
@@ -307,12 +312,9 @@ async def eval_message_f(client, message):
         if message.chat.id not in AUTH_CHANNEL:
             return
     elif message.chat.type == enums.ChatType.SUPERGROUP:
-        if (
-            hasattr(message.from_user, 'id')
-            and message.from_user.id not in AUTH_CHANNEL
-            or not hasattr(message.from_user, 'id')
-            and message.chat.id not in AUTH_CHANNEL
-        ):
+        if hasattr(message.from_user, 'id') and message.from_user.id not in AUTH_CHANNEL:
+            return
+        elif message.chat.id not in AUTH_CHANNEL:
             return
     status_message = await message.reply_text("Processing ...")
     cmd = message.text.split(" ", maxsplit=1)[1]
@@ -366,12 +368,10 @@ async def eval_message_f(client, message):
 
 
 async def aexec(code, client, message):
-    exec(
-        (
+    exec((
             "async def __aexec(client, message): "
             + "".join(f"\n {l}" for l in code.split("\n"))
-        )
-    )
+    ))
 
     return await locals()["__aexec"](client, message)
 
