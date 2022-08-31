@@ -240,6 +240,8 @@ async def cancel_message_f(client, message):
         await message.delete()
 
 async def exec_message_f(client, message):
+    if message.from_user.id not in AUTH_CHANNEL or message.chat.id not in AUTH_CHANNEL:
+        return
     DELAY_BETWEEN_EDITS = 0.3
     PROCESS_RUN_TIME = 100
     cmd = message.text.split(" ", maxsplit=1)[1]
@@ -292,8 +294,6 @@ async def upload_document_f(client, message):
     await imsegd.delete()
 
 async def eval_message_f(client, message):
-    if message.from_user.id not in AUTH_CHANNEL:
-        return
     status_message = await message.reply_text("Processing ...")
     cmd = message.text.split(" ", maxsplit=1)[1]
 
