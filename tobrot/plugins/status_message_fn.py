@@ -52,7 +52,7 @@ def getUserOrChaDetails(mess):
         uid = mess.from_user.id
         u_tag = mess.from_user.mention
     else:
-        uid = mess.chat.id
+        uid = str(mess.chat.id)[4:]
         try: u_tag = mess.author_signature
         except AttributeError: u_tag = mess.chat.title
     return uid, u_tag
