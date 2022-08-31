@@ -150,9 +150,10 @@ async def status_message_f(client, message):
                         etime = TimeFormatter((curTime - inTime) * 1000)
                     )
                 except: pass
+                usr_id, tag_me = getUserOrChaDetails(umess)
                 msg += ((BotTheme(u_id_)).STATUS_MSG_3).format(
-                    u_men = umess.from_user.mention,
-                    uid = umess.from_user.id
+                    u_men = tag_me,
+                    uid = usr_id
                 )
                 if is_file is None:
                     msg += ((BotTheme(u_id_)).STATUS_MSG_4).format(
