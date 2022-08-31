@@ -48,13 +48,13 @@ from tobrot.database.db_func import DatabaseManager
 from tobrot.bot_theme.themes import BotTheme
 
 def getUserOrChaDetails(mess):
-    if hasattr(message.from_user, 'id'):
-        uid = message.from_user.id
-        u_tag = message.from_user.mention
+    if hasattr(mess.from_user, 'id'):
+        uid = mess.from_user.id
+        u_tag = mess.from_user.mention
     else:
-        uid = message.chat.id
-        try: u_tag = message.author_signature
-        except AttributeError: u_tag = message.chat.title
+        uid = mess.chat.id
+        try: u_tag = mess.author_signature
+        except AttributeError: u_tag = mess.chat.title
     return uid, u_tag
 
 async def upload_as_doc(client, message):
