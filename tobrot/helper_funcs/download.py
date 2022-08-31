@@ -17,12 +17,12 @@ from tobrot import DOWNLOAD_LOCATION, LOGGER, TELEGRAM_LEECH_UNZIP_COMMAND
 from tobrot.helper_funcs.create_compressed_archive import unzip_me, get_base_name
 from tobrot.helper_funcs.display_progress import Progress, TimeFormatter, humanbytes
 from tobrot.helper_funcs.upload_to_tg import upload_to_gdrive
-from tobrot.plugins import getDetails
+from tobrot.plugins import getDetails, getUserOrChaDetails
 from tobrot.bot_theme.themes import BotTheme
 
 async def down_load_media_f(client, message):
     user_command = message.command[0]
-    user_id = message.from_user.id
+    user_id, _ = getUserOrChaDetails(message)
     text__, _ = getDetails(client, message, 'Cloud Rename')
     await message.reply_text(text=text__, parse_mode=enums.ParseMode.HTML, quote=True, disable_web_page_preview=True)
     if message.reply_to_message is not None:
@@ -58,7 +58,7 @@ async def down_load_media_f(client, message):
 
 async def download_tg(client, message):
 
-    user_id = message.from_user.id
+    user_id, _ = getUserOrChaDetails(message)
     mess_age = await message.reply_text((BotTheme(user_id)).START_DOWM_MSG, quote=True)
     if not opath.isdir(DOWNLOAD_LOCATION):
         omakedirs(DOWNLOAD_LOCATION)
