@@ -16,9 +16,10 @@ from PIL import Image
 from tobrot import DOWNLOAD_LOCATION, DB_URI, LOGGER
 from tobrot.database.db_func import DatabaseManager
 from tobrot.bot_theme.themes import BotTheme
+from tobrot.plugins import getUserOrChaDetails
 
 async def save_thumb_nail(client, message):
-    uid = message.from_user.id
+    uid, _ = getUserOrChaDetails(message)
     thumbnail_location = os.path.join(DOWNLOAD_LOCATION, "thumbnails")
     thumb_image_path = os.path.join(
         thumbnail_location, str(uid) + ".jpg"
@@ -48,7 +49,7 @@ async def save_thumb_nail(client, message):
         await ismgs.edit((BotTheme(uid)).SAVE_THUMB_FAIL_MSG)
 
 async def clear_thumb_nail(client, message):
-    uid = message.from_user.id
+    uid, _ = getUserOrChaDetails(message)
     thumbnail_location = os.path.join(DOWNLOAD_LOCATION, "thumbnails")
     thumb_image_path = os.path.join(
         thumbnail_location, str(uid) + ".jpg"
