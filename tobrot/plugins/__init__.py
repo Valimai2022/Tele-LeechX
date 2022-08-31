@@ -121,5 +121,5 @@ def getUserOrChaDetails(mess):
         u_tag = mess.from_user.mention
     else:
         uid = str(mess.chat.id)[4:]
-        u_tag = (mess.chat.title if mess.author_signature == 'None' else mess.author_signature)
+        u_tag = (mess.chat.title if mess.author_signature is None else mess.author_signature)
     return uid, u_tag
